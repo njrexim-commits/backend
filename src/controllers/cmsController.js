@@ -1,6 +1,7 @@
 import asyncHandler from 'express-async-handler';
 import { Certificate, Gallery, Inquiry, Blog, Product, Testimonial } from '../models/cmsModels.js';
 import { uploadToCloudinary } from '../middleware/uploadMiddleware.js';
+import sendEmail from '../utils/sendEmail.js';
 
 // --- Certificate Controllers ---
 export const getCertificates = asyncHandler(async (req, res) => {
@@ -86,6 +87,26 @@ export const createInquiry = asyncHandler(async (req, res) => {
     const { name, email, phone, subject, message } = req.body;
     const inquiry = new Inquiry({ name, email, phone, subject, message });
     const createdInquiry = await inquiry.save();
+
+    // Send Auto-Reply to User
+    try {
+        await sendEmail({
+            email,
+            subject: 'We Received Your Inquiry - NJR EXIM',
+            message: `
+                <h1>Thank You, ${name}!</h1>
+                <p>We have received your inquiry regarding "<strong>${subject || 'General Inquiry'}</strong>".</p>
+                <p>One of our representatives will review your message and get back to you shortly.</p>
+                <br>
+                <p>Best Regards,</p>
+                <p><strong>NJR EXIM Team</strong></p>
+            `,
+        });
+    } catch (error) {
+        console.error('Email sending failed:', error);
+        // Don't fail the request if email fails
+    }
+
     res.status(201).json(createdInquiry);
 });
 
@@ -125,6 +146,25 @@ export const createTestimonial = asyncHandler(async (req, res) => {
     });
 
     const createdTestimonial = await testimonial.save();
+
+    // Send Auto-Reply to User
+    try {
+        await sendEmail({
+            email,
+            subject: 'Thanks for Your Review! - NJR EXIM',
+            message: `
+                <h1>Thank You, ${name}!</h1>
+                <p>We truly appreciate you taking the time to review your experience with NJR EXIM.</p>
+                <p>Your review has been submitted for moderation and will be visible on our website shortly after approval.</p>
+                <br>
+                <p>Warm Regards,</p>
+                <p><strong>NJR EXIM Team</strong></p>
+            `,
+        });
+    } catch (error) {
+        console.error('Email sending failed:', error);
+    }
+
     res.status(201).json(createdTestimonial);
 });
 
