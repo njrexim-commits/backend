@@ -1,5 +1,7 @@
 import express from 'express';
 import {
+    authUser,
+    getUserProfile,
     setupSuperAdmin,
     forgotPassword,
     resetPassword
