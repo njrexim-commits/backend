@@ -18,16 +18,14 @@ const connectToDatabase = async () => {
     try {
         await connectDB();
         isConnected = true;
+        console.log('Database connected successfully');
     } catch (error) {
         console.error('Failed to connect to database:', error);
-        throw error;
+        // Don't throw in serverless - let requests fail gracefully
+        if (!process.env.VERCEL) {
+            throw error;
+        }
     }
-};
-
-// Vercel serverless handler
-const handler = async (req, res) => {
-    await connectToDatabase();
-    return app(req, res);
 };
 
 // For local development
@@ -47,6 +45,14 @@ if (!process.env.VERCEL) {
     startServer();
 }
 
-// Export for Vercel
-export default handler;
+// Vercel serverless handler - export the Express app directly
+export default async (req, res) => {
+    // Connect to database on first request
+    await connectToDatabase();
+
+    // Let Express handle the request
+    return app(req, res);
+};
+
+// Also export app for compatibility
 export { app };
