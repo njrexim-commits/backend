@@ -77,9 +77,9 @@ const testimonialSchema = mongoose.Schema(
     { timestamps: true }
 );
 
-export const Blog = mongoose.model('Blog', blogSchema);
-export const Product = mongoose.model('Product', productSchema);
-export const Certificate = mongoose.model('Certificate', certificateSchema);
-export const Gallery = mongoose.model('Gallery', gallerySchema);
-export const Inquiry = mongoose.model('Inquiry', inquirySchema);
-export const Testimonial = mongoose.model('Testimonial', testimonialSchema);
+export const Blog = mongoose.models.Blog || mongoose.model('Blog', blogSchema);
+export const Product = mongoose.models.Product || mongoose.model('Product', productSchema);
+export const Certificate = mongoose.models.Certificate || mongoose.model('Certificate', certificateSchema);
+export const Gallery = mongoose.models.Gallery || mongoose.model('Gallery', gallerySchema);
+export const Inquiry = mongoose.models.Inquiry || mongoose.model('Inquiry', inquirySchema);
+export const Testimonial = mongoose.models.Testimonial || mongoose.model('Testimonial', testimonialSchema);

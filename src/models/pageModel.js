@@ -25,6 +25,6 @@ const pageSchema = mongoose.Schema(
     }
 );
 
-const Page = mongoose.model('Page', pageSchema);
+const Page = mongoose.models.Page || mongoose.model('Page', pageSchema);
 
 export default Page;
