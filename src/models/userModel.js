@@ -21,6 +21,12 @@ const userSchema = mongoose.Schema(
             enum: ['super-admin', 'admin'],
             default: 'admin',
         },
+        invitationToken: String,
+        invitationExpires: Date,
+        isInvited: {
+            type: Boolean,
+            default: false,
+        },
     },
     {
         timestamps: true,

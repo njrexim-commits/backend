@@ -17,6 +17,7 @@ const pages = [
                 description: 'Delivering premium quality agricultural and food products to international markets with excellence, reliability, and commitment to sustainability.',
                 buttonText: 'Explore Our Products',
                 buttonLink: '/products',
+                image: '',
                 slides: []
             },
             about: {

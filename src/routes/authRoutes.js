@@ -7,7 +7,9 @@ import {
 import {
     getUsers,
     deleteUser,
-    updateUserBySuperAdmin
+    updateUserBySuperAdmin,
+    inviteUser,
+    acceptInvite
 } from '../controllers/userController.js';
 import { protect, superAdmin } from '../middleware/authMiddleware.js';
 import { validate } from '../middleware/validatorMiddleware.js';
@@ -27,5 +29,9 @@ router.route('/users')
 router.route('/users/:id')
     .put(protect, superAdmin, updateUserBySuperAdmin)
     .delete(protect, superAdmin, deleteUser);
+
+// Invitation Routes
+router.post('/invite', protect, superAdmin, inviteUser);
+router.post('/accept-invite', acceptInvite);
 
 export default router;

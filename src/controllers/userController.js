@@ -1,5 +1,8 @@
 import asyncHandler from 'express-async-handler';
 import User from '../models/userModel.js';
+import crypto from 'crypto';
+import bcrypt from 'bcryptjs';
+import sendEmail from '../utils/sendEmail.js';
 
 // @desc    Get all users
 // @route   GET /api/auth/users
@@ -51,4 +54,87 @@ export const updateUserBySuperAdmin = asyncHandler(async (req, res) => {
         res.status(404);
         throw new Error('User not found');
     }
+});
+
+// @desc    Invite new user
+// @route   POST /api/auth/invite
+// @access  Private/SuperAdmin
+export const inviteUser = asyncHandler(async (req, res) => {
+    const { email, role } = req.body;
+
+    const userExists = await User.findOne({ email });
+
+    if (userExists) {
+        res.status(400);
+        throw new Error('User already exists');
+    }
+
+    // Generate token
+    const invitationToken = crypto.randomBytes(20).toString('hex');
+    const invitationExpires = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+
+    // Create user with dummy password (will be set by user)
+    const user = await User.create({
+        name: 'Invited User', // Placeholder
+        email,
+        password: await bcrypt.hash(crypto.randomBytes(10).toString('hex'), 10), // Random temporary password
+        role,
+        invitationToken,
+        invitationExpires,
+        isInvited: true,
+    });
+
+    if (user) {
+        // Send email
+        const inviteUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/admin/setup-invite?token=${invitationToken}`;
+
+        try {
+            await sendEmail({
+                email: user.email,
+                subject: 'Admin Invitation - NJR EXIM',
+                message: `
+                    <h1>Welcome to NJR EXIM Admin Panel</h1>
+                    <p>You have been invited to join as an <strong>${role}</strong>.</p>
+                    <p>Please click the link below to set your password and activate your account:</p>
+                    <a href="${inviteUrl}" style="display:inline-block;padding:10px 20px;background:#003B95;color:white;text-decoration:none;border-radius:5px;">Accept Invitation</a>
+                    <p>This link will expire in 24 hours.</p>
+                `,
+            });
+            res.status(201).json({ message: `Invitation sent to ${email}` });
+        } catch (error) {
+            await user.deleteOne(); // Rollback if email fails
+            res.status(500);
+            throw new Error('Email could not be sent');
+        }
+    } else {
+        res.status(400);
+        throw new Error('Invalid user data');
+    }
+});
+
+// @desc    Accept invitation and set password
+// @route   POST /api/auth/accept-invite
+// @access  Public
+export const acceptInvite = asyncHandler(async (req, res) => {
+    const { token, password, name } = req.body;
+
+    const user = await User.findOne({
+        invitationToken: token,
+        invitationExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+        res.status(400);
+        throw new Error('Invalid or expired invitation token');
+    }
+
+    user.password = password; // Will be hashed by pre-save hook
+    user.name = name;
+    user.invitationToken = undefined;
+    user.invitationExpires = undefined;
+    user.isInvited = false;
+
+    await user.save();
+
+    res.json({ message: 'Account activated successfully. You can now login.' });
 });
