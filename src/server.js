@@ -45,13 +45,14 @@ if (!process.env.VERCEL) {
     startServer();
 }
 
-// Vercel serverless handler - export the Express app directly
+// Vercel serverless handler
 export default async (req, res) => {
     // Connect to database on first request
     await connectToDatabase();
 
-    // Let Express handle the request
-    return app(req, res);
+    // Use the Express app's request handler
+    // This is the correct way to invoke Express in serverless
+    app.handle(req, res);
 };
 
 // Also export app for compatibility
