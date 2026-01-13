@@ -7,18 +7,23 @@ import {
 import { getSettings, updateSettings } from '../controllers/settingsController.js';
 import { protect, admin, superAdmin } from '../middleware/authMiddleware.js';
 import upload from '../middleware/uploadMiddleware.js';
+import { validate } from '../middleware/validatorMiddleware.js';
+import {
+    certificateSchema, gallerySchema, inquirySchema, settingsSchema
+} from '../utils/validationSchemas.js';
+import { contentLimiter } from '../middleware/securityMiddleware.js';
 
 const router = express.Router();
 
 // Site Settings
 router.route('/settings')
     .get(getSettings)
-    .put(protect, superAdmin, updateSettings);
+    .put(protect, superAdmin, validate(settingsSchema), updateSettings);
 
 // Certificate routes
 router.route('/certificates')
     .get(getCertificates)
-    .post(protect, admin, upload.single('file'), createCertificate);
+    .post(protect, admin, contentLimiter, upload.single('file'), validate(certificateSchema), createCertificate);
 
 router.route('/certificates/:id')
     .delete(protect, admin, deleteCertificate);
@@ -26,7 +31,7 @@ router.route('/certificates/:id')
 // Gallery routes
 router.route('/gallery')
     .get(getGalleryItems)
-    .post(protect, admin, upload.single('image'), createGalleryItem);
+    .post(protect, admin, contentLimiter, upload.single('image'), validate(gallerySchema), createGalleryItem);
 
 router.route('/gallery/:id')
     .delete(protect, admin, deleteGalleryItem);
@@ -34,7 +39,7 @@ router.route('/gallery/:id')
 // Inquiry routes
 router.route('/inquiries')
     .get(protect, admin, getInquiries)
-    .post(createInquiry);
+    .post(contentLimiter, validate(inquirySchema), createInquiry);
 
 router.route('/inquiries/:id')
     .put(protect, admin, updateInquiryStatus)

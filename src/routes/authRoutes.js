@@ -10,11 +10,14 @@ import {
     updateUserBySuperAdmin
 } from '../controllers/userController.js';
 import { protect, superAdmin } from '../middleware/authMiddleware.js';
+import { validate } from '../middleware/validatorMiddleware.js';
+import { loginSchema, setupSchema } from '../utils/validationSchemas.js';
+import { authLimiter } from '../middleware/securityMiddleware.js';
 
 const router = express.Router();
 
-router.post('/login', authUser);
-router.post('/setup', setupSuperAdmin);
+router.post('/login', authLimiter, validate(loginSchema), authUser);
+router.post('/setup', authLimiter, validate(setupSchema), setupSuperAdmin);
 router.get('/profile', protect, getUserProfile);
 
 // User management (Super Admin only)
