@@ -63,8 +63,23 @@ const inquirySchema = mongoose.Schema(
     { timestamps: true }
 );
 
+// Testimonial Schema
+const testimonialSchema = mongoose.Schema(
+    {
+        name: { type: String, required: true },
+        email: { type: String, required: true }, // Not shown publicly
+        rating: { type: Number, required: true, min: 1, max: 5 },
+        content: { type: String, required: true },
+        designation: { type: String },
+        avatar: { type: String },
+        isApproved: { type: Boolean, default: false },
+    },
+    { timestamps: true }
+);
+
 export const Blog = mongoose.model('Blog', blogSchema);
 export const Product = mongoose.model('Product', productSchema);
 export const Certificate = mongoose.model('Certificate', certificateSchema);
 export const Gallery = mongoose.model('Gallery', gallerySchema);
 export const Inquiry = mongoose.model('Inquiry', inquirySchema);
+export const Testimonial = mongoose.model('Testimonial', testimonialSchema);

@@ -1,5 +1,5 @@
 import asyncHandler from 'express-async-handler';
-import { Certificate, Gallery, Inquiry } from '../models/cmsModels.js';
+import { Certificate, Gallery, Inquiry, Blog, Product, Testimonial } from '../models/cmsModels.js';
 import { uploadToCloudinary } from '../middleware/uploadMiddleware.js';
 
 // --- Certificate Controllers ---
@@ -111,15 +111,64 @@ export const deleteInquiry = asyncHandler(async (req, res) => {
         throw new Error('Inquiry not found');
     }
 });
-// --- Dashboard Activity ---
-import { Blog, Product } from '../models/cmsModels.js';
 
+// --- Testimonial Controllers ---
+export const createTestimonial = asyncHandler(async (req, res) => {
+    const { name, email, rating, content, designation } = req.body;
+
+    const testimonial = new Testimonial({
+        name,
+        email,
+        rating,
+        content,
+        designation,
+    });
+
+    const createdTestimonial = await testimonial.save();
+    res.status(201).json(createdTestimonial);
+});
+
+export const getPublicTestimonials = asyncHandler(async (req, res) => {
+    const testimonials = await Testimonial.find({ isApproved: true }).sort({ createdAt: -1 });
+    res.json(testimonials);
+});
+
+export const getAllTestimonials = asyncHandler(async (req, res) => {
+    const testimonials = await Testimonial.find({}).sort({ createdAt: -1 });
+    res.json(testimonials);
+});
+
+export const updateTestimonialStatus = asyncHandler(async (req, res) => {
+    const testimonial = await Testimonial.findById(req.params.id);
+    if (testimonial) {
+        testimonial.isApproved = req.body.isApproved;
+        const updatedTestimonial = await testimonial.save();
+        res.json(updatedTestimonial);
+    } else {
+        res.status(404);
+        throw new Error('Testimonial not found');
+    }
+});
+
+export const deleteTestimonial = asyncHandler(async (req, res) => {
+    const testimonial = await Testimonial.findById(req.params.id);
+    if (testimonial) {
+        await testimonial.deleteOne();
+        res.json({ message: 'Testimonial removed' });
+    } else {
+        res.status(404);
+        throw new Error('Testimonial not found');
+    }
+});
+
+// --- Dashboard Activity ---
 export const getRecentActivity = asyncHandler(async (req, res) => {
-    const [blogs, products, inquiries, galleries] = await Promise.all([
+    const [blogs, products, inquiries, galleries, testimonials] = await Promise.all([
         Blog.find({}).sort({ createdAt: -1 }).limit(5),
         Product.find({}).sort({ createdAt: -1 }).limit(5),
         Inquiry.find({}).sort({ createdAt: -1 }).limit(5),
-        Gallery.find({}).sort({ createdAt: -1 }).limit(5)
+        Gallery.find({}).sort({ createdAt: -1 }).limit(5),
+        Testimonial.find({}).sort({ createdAt: -1 }).limit(5)
     ]);
 
     const activities = [
@@ -139,21 +188,21 @@ export const getRecentActivity = asyncHandler(async (req, res) => {
         })),
         ...inquiries.map(i => ({
             id: i._id,
-            type: 'user',
+            type: 'inquiry',
             message: 'New inquiry',
             detail: `From ${i.name}`,
             time: i.createdAt
         })),
-        ...galleries.map(g => ({
-            id: g._id,
-            type: 'media',
-            message: 'Image uploaded',
-            detail: g.title,
-            time: g.createdAt
+        ...testimonials.map(t => ({
+            id: t._id,
+            type: 'testimonial',
+            message: `New review (${t.rating}★)`,
+            detail: `From ${t.name}`,
+            time: t.createdAt
         }))
     ];
 
-    // Sort combined activities by time (newest first) and take top 10
     activities.sort((a, b) => new Date(b.time) - new Date(a.time));
+
     res.json(activities.slice(0, 10));
 });

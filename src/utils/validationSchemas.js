@@ -55,6 +55,14 @@ export const gallerySchema = Joi.object({
     category: Joi.string().optional().trim().allow(''),
 });
 
+export const testimonialSchema = Joi.object({
+    name: Joi.string().min(2).max(50).required().trim(),
+    email: Joi.string().email().required().lowercase().trim(),
+    rating: Joi.number().min(1).max(5).required(),
+    content: Joi.string().min(10).max(500).required().trim(),
+    designation: Joi.string().max(50).optional().trim().allow(''),
+});
+
 /**
  * Settings Schema
  */

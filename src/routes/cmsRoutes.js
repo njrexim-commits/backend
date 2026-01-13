@@ -3,14 +3,15 @@ import {
     getCertificates, createCertificate, deleteCertificate,
     getGalleryItems, createGalleryItem, deleteGalleryItem,
     getInquiries, createInquiry, updateInquiryStatus, deleteInquiry,
-    getRecentActivity
+    getRecentActivity,
+    createTestimonial, getPublicTestimonials, getAllTestimonials, updateTestimonialStatus, deleteTestimonial
 } from '../controllers/cmsController.js';
 import { getSettings, updateSettings } from '../controllers/settingsController.js';
 import { protect, admin, superAdmin } from '../middleware/authMiddleware.js';
 import upload from '../middleware/uploadMiddleware.js';
 import { validate } from '../middleware/validatorMiddleware.js';
 import {
-    certificateSchema, gallerySchema, inquirySchema, settingsSchema
+    certificateSchema, gallerySchema, inquirySchema, settingsSchema, testimonialSchema
 } from '../utils/validationSchemas.js';
 import { contentLimiter } from '../middleware/securityMiddleware.js';
 
@@ -48,5 +49,17 @@ router.route('/inquiries')
 router.route('/inquiries/:id')
     .put(protect, admin, updateInquiryStatus)
     .delete(protect, admin, deleteInquiry);
+
+// Testimonial routes
+router.route('/testimonials')
+    .get(getPublicTestimonials)
+    .post(contentLimiter, validate(testimonialSchema), createTestimonial);
+
+router.route('/testimonials/admin')
+    .get(protect, admin, getAllTestimonials);
+
+router.route('/testimonials/:id')
+    .put(protect, admin, updateTestimonialStatus)
+    .delete(protect, admin, deleteTestimonial);
 
 export default router;
