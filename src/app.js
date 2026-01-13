@@ -13,17 +13,21 @@ dotenv.config();
 const app = express();
 
 // 1. CORS Middleware (Should be first)
-const allowedOrigins = process.env.CLIENT_URL
+const defaultAllowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'http://localhost:8080',
+    'http://localhost:8081',
+    'https://njrexim.com',
+    'https://www.njrexim.com',
+    'https://api.njrexim.com'
+];
+
+const envOrigins = process.env.CLIENT_URL
     ? process.env.CLIENT_URL.split(',').map(url => url.trim())
-    : [
-        'http://localhost:5173',
-        'http://localhost:3000',
-        'http://localhost:8080',
-        'http://localhost:8081',
-        'https://njrexim.com',
-        'https://www.njrexim.com',
-        'https://api.njrexim.com'
-    ];
+    : [];
+
+const allowedOrigins = [...new Set([...defaultAllowedOrigins, ...envOrigins])];
 
 app.use(cors({
     origin: function (origin, callback) {
