@@ -86,7 +86,8 @@ export const inviteUser = asyncHandler(async (req, res) => {
 
     if (user) {
         // Send email
-        const inviteUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/admin/setup-invite?token=${invitationToken}`;
+        const frontendUrl = req.headers.origin || process.env.FRONTEND_URL || 'http://localhost:5173';
+        const inviteUrl = `${frontendUrl}/admin/setup-invite?token=${invitationToken}`;
 
         try {
             await sendEmail({

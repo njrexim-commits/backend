@@ -1,8 +1,8 @@
 import express from 'express';
 import {
-    authUser,
-    getUserProfile,
-    setupSuperAdmin
+    setupSuperAdmin,
+    forgotPassword,
+    resetPassword
 } from '../controllers/authController.js';
 import {
     getUsers,
@@ -20,6 +20,8 @@ const router = express.Router();
 
 router.post('/login', authLimiter, validate(loginSchema), authUser);
 router.post('/setup', authLimiter, validate(setupSchema), setupSuperAdmin);
+router.post('/forgotpassword', forgotPassword);
+router.put('/resetpassword/:resettoken', resetPassword);
 router.get('/profile', protect, getUserProfile);
 
 // User management (Super Admin only)
