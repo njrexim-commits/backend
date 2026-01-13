@@ -4,7 +4,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import { mongoSanitize } from './middleware/mongoSanitize.js';
-import xss from 'xss-clean';
+// xss-clean removed for Vercel serverless compatibility
 import { publicLimiter } from './middleware/securityMiddleware.js';
 import { errorHandler, notFound } from './middleware/error.js';
 
@@ -39,7 +39,8 @@ app.use(cors({
 // 2. Security Middleware
 app.use(helmet()); // Set security HTTP headers
 app.use(mongoSanitize); // Prevent NoSQL injection (custom middleware)
-app.use(xss()); // Sanitize user input (XSS protection)
+// Note: xss-clean is disabled for Vercel compatibility (causes read-only property errors in serverless)
+// app.use(xss()); // XSS protection is still provided by helmet and input validation
 
 // 3. Logger Middleware
 if (process.env.NODE_ENV === 'development') {
