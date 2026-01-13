@@ -12,6 +12,9 @@ dotenv.config();
 
 const app = express();
 
+// Trust Vercel Proxy (Required for rate limiting and IP detection)
+app.set('trust proxy', 1);
+
 // 1. CORS Middleware (Should be first)
 const defaultAllowedOrigins = [
     'http://localhost:5173',
