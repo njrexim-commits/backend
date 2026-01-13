@@ -20,7 +20,9 @@ const allowedOrigins = process.env.CLIENT_URL
         'http://localhost:3000',
         'http://localhost:8080',
         'http://localhost:8081',
-        'https://njrexim.com'
+        'https://njrexim.com',
+        'https://www.njrexim.com',
+        'https://api.njrexim.com'
     ];
 
 app.use(cors({
