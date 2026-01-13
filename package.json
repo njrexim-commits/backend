@@ -9,6 +9,7 @@
     "dev": "nodemon src/server.js",
     "data:import": "node src/seeder.js",
     "data:destroy": "node src/seeder.js -d",
+    "pages:init": "node src/scripts/initializePages.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
