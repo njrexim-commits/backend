@@ -2,7 +2,8 @@ import express from 'express';
 import {
     getCertificates, createCertificate, deleteCertificate,
     getGalleryItems, createGalleryItem, deleteGalleryItem,
-    getInquiries, createInquiry, updateInquiryStatus, deleteInquiry
+    getInquiries, createInquiry, updateInquiryStatus, deleteInquiry,
+    getRecentActivity
 } from '../controllers/cmsController.js';
 import { getSettings, updateSettings } from '../controllers/settingsController.js';
 import { protect, admin, superAdmin } from '../middleware/authMiddleware.js';
@@ -14,6 +15,9 @@ import {
 import { contentLimiter } from '../middleware/securityMiddleware.js';
 
 const router = express.Router();
+
+// Activity Feed
+router.get('/activity', protect, admin, getRecentActivity);
 
 // Site Settings
 router.route('/settings')

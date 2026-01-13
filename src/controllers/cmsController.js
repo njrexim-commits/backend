@@ -111,3 +111,50 @@ export const deleteInquiry = asyncHandler(async (req, res) => {
         throw new Error('Inquiry not found');
     }
 });
+// --- Dashboard Activity ---
+import { Blog } from '../models/blogModel.js';
+import { Product } from '../models/productModel.js';
+
+export const getRecentActivity = asyncHandler(async (req, res) => {
+    const [blogs, products, inquiries, galleries] = await Promise.all([
+        Blog.find({}).sort({ createdAt: -1 }).limit(5),
+        Product.find({}).sort({ createdAt: -1 }).limit(5),
+        Inquiry.find({}).sort({ createdAt: -1 }).limit(5),
+        Gallery.find({}).sort({ createdAt: -1 }).limit(5)
+    ]);
+
+    const activities = [
+        ...blogs.map(b => ({
+            id: b._id,
+            type: 'content',
+            message: 'New blog post',
+            detail: b.title,
+            time: b.createdAt
+        })),
+        ...products.map(p => ({
+            id: p._id,
+            type: 'product',
+            message: 'Product added',
+            detail: p.name,
+            time: p.createdAt
+        })),
+        ...inquiries.map(i => ({
+            id: i._id,
+            type: 'user',
+            message: 'New inquiry',
+            detail: `From ${i.name}`,
+            time: i.createdAt
+        })),
+        ...galleries.map(g => ({
+            id: g._id,
+            type: 'media',
+            message: 'Image uploaded',
+            detail: g.title,
+            time: g.createdAt
+        }))
+    ];
+
+    // Sort combined activities by time (newest first) and take top 10
+    activities.sort((a, b) => new Date(b.time) - new Date(a.time));
+    res.json(activities.slice(0, 10));
+});
