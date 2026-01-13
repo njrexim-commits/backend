@@ -112,8 +112,7 @@ export const deleteInquiry = asyncHandler(async (req, res) => {
     }
 });
 // --- Dashboard Activity ---
-import { Blog } from '../models/blogModel.js';
-import { Product } from '../models/productModel.js';
+import { Blog, Product } from '../models/cmsModels.js';
 
 export const getRecentActivity = asyncHandler(async (req, res) => {
     const [blogs, products, inquiries, galleries] = await Promise.all([
