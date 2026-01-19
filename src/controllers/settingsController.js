@@ -24,6 +24,10 @@ export const updateSettings = asyncHandler(async (req, res) => {
         settings.contactEmail = req.body.contactEmail || settings.contactEmail;
         settings.contactPhone = req.body.contactPhone || settings.contactPhone;
         settings.address = req.body.address || settings.address;
+        settings.city = req.body.city || settings.city;
+        settings.state = req.body.state || settings.state;
+        settings.pincode = req.body.pincode || settings.pincode;
+        settings.country = req.body.country || settings.country;
         settings.facebookUrl = req.body.facebookUrl || settings.facebookUrl;
         settings.twitterUrl = req.body.twitterUrl || settings.twitterUrl;
         settings.linkedinUrl = req.body.linkedinUrl || settings.linkedinUrl;
