@@ -15,6 +15,7 @@ const settingsSchema = mongoose.Schema(
         twitterUrl: { type: String },
         linkedinUrl: { type: String },
         instagramUrl: { type: String },
+        ogImageUrl: { type: String },
     },
     { timestamps: true }
 );

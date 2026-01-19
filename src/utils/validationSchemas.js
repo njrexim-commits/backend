@@ -80,4 +80,5 @@ export const settingsSchema = Joi.object({
     twitterUrl: Joi.string().uri().optional().allow(''),
     linkedinUrl: Joi.string().uri().optional().allow(''),
     instagramUrl: Joi.string().uri().optional().allow(''),
+    ogImageUrl: Joi.string().uri().optional().allow(''),
 });

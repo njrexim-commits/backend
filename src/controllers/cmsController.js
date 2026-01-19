@@ -3,6 +3,19 @@ import { Certificate, Gallery, Inquiry, Blog, Product, Testimonial } from '../mo
 import { uploadToCloudinary } from '../middleware/uploadMiddleware.js';
 import sendEmail from '../utils/sendEmail.js';
 
+// --- Generic Upload Controller ---
+export const uploadFile = asyncHandler(async (req, res) => {
+    if (!req.file) {
+        res.status(400);
+        throw new Error('File is required');
+    }
+
+    const folder = req.body.folder || 'uploads';
+    const result = await uploadToCloudinary(req.file.buffer, folder);
+
+    res.status(201).json({ url: result.secure_url });
+});
+
 // --- Certificate Controllers ---
 export const getCertificates = asyncHandler(async (req, res) => {
     const certificates = await Certificate.find({});

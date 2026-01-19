@@ -32,6 +32,7 @@ export const updateSettings = asyncHandler(async (req, res) => {
         settings.twitterUrl = req.body.twitterUrl || settings.twitterUrl;
         settings.linkedinUrl = req.body.linkedinUrl || settings.linkedinUrl;
         settings.instagramUrl = req.body.instagramUrl || settings.instagramUrl;
+        settings.ogImageUrl = req.body.ogImageUrl || settings.ogImageUrl;
 
         const updatedSettings = await settings.save();
         res.json(updatedSettings);

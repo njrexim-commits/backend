@@ -4,7 +4,8 @@ import {
     getGalleryItems, createGalleryItem, deleteGalleryItem,
     getInquiries, createInquiry, updateInquiryStatus, deleteInquiry,
     getRecentActivity,
-    createTestimonial, getPublicTestimonials, getAllTestimonials, updateTestimonialStatus, deleteTestimonial
+    createTestimonial, getPublicTestimonials, getAllTestimonials, updateTestimonialStatus, deleteTestimonial,
+    uploadFile
 } from '../controllers/cmsController.js';
 import { getSettings, updateSettings } from '../controllers/settingsController.js';
 import { protect, admin, superAdmin } from '../middleware/authMiddleware.js';
@@ -19,6 +20,9 @@ const router = express.Router();
 
 // Activity Feed
 router.get('/activity', protect, admin, getRecentActivity);
+
+// Generic Upload
+router.post('/upload', protect, admin, contentLimiter, upload.single('file'), uploadFile);
 
 // Site Settings
 router.route('/settings')
