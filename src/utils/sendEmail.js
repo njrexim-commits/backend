@@ -3,15 +3,15 @@ import nodemailer from 'nodemailer';
 const sendEmail = async (options) => {
     // 1) Create a transporter
     const transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST,
-        port: process.env.SMTP_PORT,
-        secure: process.env.SMTP_PORT == 465, // true for 465, false for other ports
+        host: process.env.SMTP_HOST || 'smtp.office365.com',
+        port: process.env.SMTP_PORT || 587,
+        secure: false, // true for 465, false for other ports
         auth: {
             user: process.env.SMTP_EMAIL,
             pass: process.env.SMTP_PASSWORD,
         },
         tls: {
-            ciphers: 'SSLv3', // Required for some Microsoft SMTP servers
+            ciphers: 'SSLv3',
             rejectUnauthorized: false
         }
     });

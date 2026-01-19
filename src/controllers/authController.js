@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import User from '../models/userModel.js';
 import sendEmail from '../utils/sendEmail.js';
+import { generateEmailHtml } from '../utils/emailTemplates.js';
 
 // @desc    Auth user & get token
 // @route   POST /api/auth/login
@@ -110,17 +111,24 @@ export const forgotPassword = asyncHandler(async (req, res) => {
     const frontendUrl = origin || process.env.FRONTEND_URL || 'http://localhost:5173';
     const resetUrl = `${frontendUrl}/admin/reset-password?token=${resetToken}`;
 
-    const message = `
-        <h1>You have requested a password reset</h1>
-        <p>Please go to this link to reset your password:</p>
-        <a href="${resetUrl}" clicktracking=off>${resetUrl}</a>
+    const emailContent = `
+        <h1>Password Reset Request</h1>
+        <p>You have requested a password reset for your <strong>NJR EXIM</strong> account.</p>
+        <p>Please click the button below to reset your password:</p>
+        <a href="${resetUrl}" class="button">Reset Password</a>
+        <p>Or copy and paste this link into your browser:</p>
+        <p><a href="${resetUrl}">${resetUrl}</a></p>
+        <p>If you did not request this, please ignore this email.</p>
     `;
+
+    const html = await generateEmailHtml('Password Reset Request', emailContent);
 
     try {
         await sendEmail({
             email: user.email,
             subject: 'Password Reset Request',
-            message,
+            message: html,
+            text: `You have requested a password reset. Please copy and paste this link to reset your password: ${resetUrl}`,
         });
 
         res.status(200).json({ success: true, data: 'Email sent' });

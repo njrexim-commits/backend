@@ -3,6 +3,7 @@ import User from '../models/userModel.js';
 import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import sendEmail from '../utils/sendEmail.js';
+import { generateEmailHtml } from '../utils/emailTemplates.js';
 
 // @desc    Get all users
 // @route   GET /api/auth/users
@@ -91,16 +92,23 @@ export const inviteUser = asyncHandler(async (req, res) => {
         const inviteUrl = `${frontendUrl}/admin/setup-invite?token=${invitationToken}`;
 
         try {
+            const emailContent = `
+                <h1>Welcome to NJR EXIM Admin Panel</h1>
+                <p>You have been invited to join as an <strong>${role}</strong>.</p>
+                <p>Please click the button below to set your password and activate your account:</p>
+                <a href="${inviteUrl}" class="button">Accept Invitation</a>
+                <p>Or copy and paste this link:</p>
+                <p><a href="${inviteUrl}">${inviteUrl}</a></p>
+                <p>This link will expire in 24 hours.</p>
+            `;
+
+            const html = await generateEmailHtml('Admin Invitation', emailContent);
+
             await sendEmail({
                 email: user.email,
                 subject: 'Admin Invitation - NJR EXIM',
-                message: `
-                    <h1>Welcome to NJR EXIM Admin Panel</h1>
-                    <p>You have been invited to join as an <strong>${role}</strong>.</p>
-                    <p>Please click the link below to set your password and activate your account:</p>
-                    <a href="${inviteUrl}" style="display:inline-block;padding:10px 20px;background:#003B95;color:white;text-decoration:none;border-radius:5px;">Accept Invitation</a>
-                    <p>This link will expire in 24 hours.</p>
-                `,
+                message: html,
+                text: `Welcome to NJR EXIM Admin Panel. You have been invited to join as an ${role}. Please copy and paste this link to accept the invitation: ${inviteUrl}`,
             });
             res.status(201).json({ message: `Invitation sent to ${email}` });
         } catch (error) {
