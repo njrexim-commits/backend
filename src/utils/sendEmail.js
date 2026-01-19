@@ -10,6 +10,10 @@ const sendEmail = async (options) => {
             user: process.env.SMTP_EMAIL,
             pass: process.env.SMTP_PASSWORD,
         },
+        tls: {
+            ciphers: 'SSLv3', // Required for some Microsoft SMTP servers
+            rejectUnauthorized: false
+        }
     });
 
     // 2) Define the email options
