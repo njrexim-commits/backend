@@ -6,6 +6,7 @@ const settingsSchema = mongoose.Schema(
         siteDescription: { type: String },
         contactEmail: { type: String },
         contactPhone: { type: String },
+        alternatePhone: { type: String },
         address: { type: String },
         city: { type: String },
         state: { type: String },

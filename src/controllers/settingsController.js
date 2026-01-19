@@ -23,6 +23,7 @@ export const updateSettings = asyncHandler(async (req, res) => {
         settings.siteDescription = req.body.siteDescription || settings.siteDescription;
         settings.contactEmail = req.body.contactEmail || settings.contactEmail;
         settings.contactPhone = req.body.contactPhone || settings.contactPhone;
+        settings.alternatePhone = req.body.alternatePhone || settings.alternatePhone;
         settings.address = req.body.address || settings.address;
         settings.city = req.body.city || settings.city;
         settings.state = req.body.state || settings.state;
