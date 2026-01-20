@@ -19,6 +19,21 @@ export default async (req, res) => {
     } catch (error) {
         console.error('Critical Serverless Startup Error:', error);
         // Send a 500 response with error details (safe for admin debugging)
+        // Set CORS headers manually for the error response
+        const origin = req.headers.origin;
+        const allowedOrigins = [
+            'http://localhost:5173',
+            'http://localhost:3000',
+            'https://njrexim.com',
+            'https://www.njrexim.com',
+            'https://api.njrexim.com'
+        ];
+
+        if (origin && allowedOrigins.includes(origin)) {
+            res.setHeader('Access-Control-Allow-Origin', origin);
+            res.setHeader('Access-Control-Allow-Credentials', 'true');
+        }
+
         res.status(500).json({
             error: 'Server Startup Failed',
             details: error.message,
